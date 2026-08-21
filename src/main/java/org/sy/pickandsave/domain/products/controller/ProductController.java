@@ -41,9 +41,9 @@ public class ProductController {
 
   @Operation(summary = "상품 전체 목록 조회", description = "등록된 전체 상품 리스트를 조회합니다.")
   @GetMapping
-  public ResponseEntity<List<ProductResponse>> getAllProducts() {
+  public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProducts() {
     List<ProductResponse> response = productService.getAllProducts();
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(ApiResponse.success(response));
   }
 
   @Operation(summary = "쿠팡 상품 검색 및 DB 자동 저장", description = "키워드로 쿠팡 상품을 검색하여 신규 상품인 경우 DB에 즉시 저장합니다.")

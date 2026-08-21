@@ -1,6 +1,7 @@
 package org.sy.pickandsave.domain.products.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
     @Index(name = "idx_category_keywords_keyword", columnList = "keyword")
 })
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryKeyword {
 
   @Id

@@ -1,6 +1,7 @@
 package org.sy.pickandsave.domain.history.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
     @Index(name = "idx_price_history_product_date", columnList = "product_id, created_at")
 })
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PriceHistory {
 
   @Id
