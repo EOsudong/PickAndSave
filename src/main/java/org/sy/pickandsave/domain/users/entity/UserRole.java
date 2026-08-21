@@ -1,0 +1,6 @@
+package org.sy.pickandsave.domain.users.entity;
+
+public enum UserRole {
+  ROLE_USER,
+  ROLE_ADMIN
+}
