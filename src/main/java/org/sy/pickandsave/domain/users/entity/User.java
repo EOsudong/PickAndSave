@@ -1,9 +1,7 @@
 package org.sy.pickandsave.domain.users.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +18,8 @@ import java.time.LocalDateTime;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class User {
 
   @Id
@@ -58,6 +58,10 @@ public class User {
   @Column(name = "status", length = 20, nullable = false)
   private UserStatus status;
 
+  @Enumerated(EnumType.STRING)
+  @Column(name = "plan", nullable = false)
+  private UserPlan plan;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
@@ -66,6 +70,15 @@ public class User {
 
   @Column(name = "last_login_at", nullable = false)
   private LocalDateTime lastLoginAt;
+
+  @Builder
+  public User(String email, String nickname, AuthProvider provider, String providerId, UserPlan plan) {
+    this.email = email;
+    this.nickname = nickname;
+    this.provider = provider;
+    this.providerId = providerId;
+    this.plan = plan != null ? plan : UserPlan.FREE; // 기본값 FREE
+  }
 
   @PrePersist
   protected void prePersist() {
@@ -122,6 +135,7 @@ public class User {
     user.nickname = nickname;
     user.provider = AuthProvider.valueOf(provider);
     user.providerId = providerId;
+    user.plan = UserPlan.FREE;
 
     return user;
   }
