@@ -12,7 +12,7 @@ spring:
   # 애플리케이션 실행 시 DDL(테이블 생성/수정) 자동 관리 옵션
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
       # SQL 출력 및 포맷팅 설정
     show-sql: true
     properties:

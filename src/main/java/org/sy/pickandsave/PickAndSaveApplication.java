@@ -17,6 +17,7 @@ public class PickAndSaveApplication {
 		Dotenv dotenv;
 		File defaultEnv = new File(userDir, ".env");
 
+
 		if (defaultEnv.exists()) {
 			dotenv = Dotenv.configure().load();
 		} else {
