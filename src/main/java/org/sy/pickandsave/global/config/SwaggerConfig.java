@@ -1,4 +1,4 @@
-package org.sy.pickandsave.config;
+package org.sy.pickandsave.global.config;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

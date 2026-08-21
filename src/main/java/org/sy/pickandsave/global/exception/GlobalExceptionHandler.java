@@ -50,4 +50,11 @@ public class GlobalExceptionHandler {
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(ApiResponse.error("서버 내부 오류가 발생했습니다. 관리자에게 문의하세요."));
   }
+
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException e) {
+    log.error("External API Error: {}", e.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+        .body(ApiResponse.error(e.getMessage()));
+  }
 }

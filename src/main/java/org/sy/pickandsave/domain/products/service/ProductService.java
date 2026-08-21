@@ -4,12 +4,17 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.sy.pickandsave.domain.history.entity.PriceHistory;
+import org.sy.pickandsave.domain.history.repository.PriceHistoryRepository;
+import org.sy.pickandsave.domain.history.service.PriceHistoryService;
+import org.sy.pickandsave.domain.products.dto.ProductCreateCommand;
 import org.sy.pickandsave.domain.products.dto.ProductCreateRequest;
 import org.sy.pickandsave.domain.products.dto.ProductResponse;
 import org.sy.pickandsave.domain.products.entity.Product;
 import org.sy.pickandsave.domain.products.entity.ProductCategory;
 import org.sy.pickandsave.domain.products.repository.ProductCategoryRepository;
 import org.sy.pickandsave.domain.products.repository.ProductRepository;
+import org.sy.pickandsave.global.exception.DuplicateProductException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,39 +22,64 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Builder
 public class ProductService {
   private final ProductRepository productRepository;
   private final ProductCategoryRepository categoryRepository;
+  private final PriceHistoryService priceHistoryService;
 
+  /**
+   * HTTP 요청 DTO 기반 등록 (Controller용)
+   */
   @Transactional
   public ProductResponse createProduct(ProductCreateRequest request) {
-    if (productRepository.existsByCoupangProductId(request.getCoupangProductId())) {
-      throw new IllegalArgumentException("이미 등록된 쿠팡 상품 ID입니다: " + request.getCoupangProductId());
-    }
-
-    ProductCategory category = null;
-    if (request.getCategoryId() != null) {
-      category = categoryRepository.findById(request.getCategoryId())
-          .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 ID입니다."));
-    }
-
-    // 초기 수집 시 현재가를 최저가/최고가/평균가로 지정
-    Product product = Product.builder()
+    ProductCreateCommand command = ProductCreateCommand.builder()
         .coupangProductId(request.getCoupangProductId())
         .productName(request.getProductName())
         .coupangProductUrl(request.getCoupangProductUrl())
         .partnersAffiliateUrl(request.getPartnersAffiliateUrl())
         .imageUrl(request.getImageUrl())
-        .category(category)
+        .categoryId(request.getCategoryId())
         .currentPrice(request.getCurrentPrice())
-        .lowestPrice(request.getCurrentPrice())
-        .highestPrice(request.getCurrentPrice())
-        .averagePrice(BigDecimal.valueOf(request.getCurrentPrice()))
         .rocket(request.isRocket())
         .build();
 
+    return createProductByCommand(command);
+  }
+
+  /**
+   * 내부 Command 기반 등록 (CoupangApiService 및 서비스 간 내부 연동용)
+   */
+  @Transactional
+  public ProductResponse createProductByCommand(ProductCreateCommand command) {
+    if (productRepository.existsByCoupangProductId(command.coupangProductId())) {
+      throw new DuplicateProductException("이미 등록된 쿠팡 상품 ID입니다: " + command.coupangProductId());
+    }
+
+    ProductCategory category = null;
+    if (command.categoryId() != null) {
+      category = categoryRepository.findById(command.categoryId())
+          .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 ID입니다."));
+    }
+
+    Product product = Product.builder()
+        .coupangProductId(command.coupangProductId())
+        .productName(command.productName())
+        .coupangProductUrl(command.coupangProductUrl())
+        .partnersAffiliateUrl(command.partnersAffiliateUrl())
+        .imageUrl(command.imageUrl())
+        .category(category)
+        .currentPrice(command.currentPrice())
+        .lowestPrice(command.currentPrice())
+        .highestPrice(command.currentPrice())
+        .averagePrice(BigDecimal.valueOf(command.currentPrice()))
+        .rocket(command.rocket())
+        .build();
+
     Product savedProduct = productRepository.save(product);
+
+    // 최초 가격 이력 생성
+    priceHistoryService.recordPriceAndCalculateStats(savedProduct, command.currentPrice());
+
     return ProductResponse.from(savedProduct);
   }
 

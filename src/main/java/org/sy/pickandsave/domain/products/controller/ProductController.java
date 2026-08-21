@@ -11,6 +11,7 @@ import org.sy.pickandsave.domain.products.dto.ProductCreateRequest;
 import org.sy.pickandsave.domain.products.dto.ProductResponse;
 import org.sy.pickandsave.domain.products.service.ProductService;
 import org.sy.pickandsave.global.common.ApiResponse;
+import org.sy.pickandsave.global.external.coupang.CoupangApiService;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ import java.util.List;
 public class ProductController {
 
   private final ProductService productService;
+  private final CoupangApiService coupangApiService;
 
   @Operation(summary = "상품 등록", description = "신규 쿠팡 상품 정보를 DB에 등록합니다.")
   @PostMapping
@@ -41,5 +43,15 @@ public class ProductController {
   public ResponseEntity<List<ProductResponse>> getAllProducts() {
     List<ProductResponse> response = productService.getAllProducts();
     return ResponseEntity.ok(response);
+  }
+
+  @Operation(summary = "쿠팡 상품 검색 및 DB 자동 저장", description = "키워드로 쿠팡 상품을 검색하여 신규 상품인 경우 DB에 즉시 저장합니다.")
+  @PostMapping("/search/coupang")
+  public ResponseEntity<ApiResponse<List<ProductResponse>>> searchAndSaveCoupangProducts(
+      @RequestParam("keyword") String keyword,
+      @RequestParam(value = "limit", defaultValue = "10") int limit) {
+
+    List<ProductResponse> responses = coupangApiService.searchAndSaveProducts(keyword, limit);
+    return ResponseEntity.ok(ApiResponse.success(responses));
   }
 }

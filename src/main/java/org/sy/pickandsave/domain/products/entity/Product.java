@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Entity
@@ -172,5 +173,30 @@ public class Product {
   @PreUpdate
   protected void preUpdate() {
     updatedAt = LocalDateTime.now();
+  }
+
+  /**
+   * 가격 변동 시 최저가/최고가/평균가 통계 재계산 업데이트 메서드 (추가)
+   */
+  public void updatePrice(Long newPrice, long totalPriceSum, long totalCount) {
+    this.currentPrice = newPrice;
+
+    // 역대 최저가 갱신
+    if (newPrice < this.lowestPrice) {
+      this.lowestPrice = newPrice;
+    }
+
+    // 역대 최고가 갱신
+    if (newPrice > this.highestPrice) {
+      this.highestPrice = newPrice;
+    }
+
+    // 평균가 재계산 (소수점 둘째 자리 반올림)
+    if (totalCount > 0) {
+      this.averagePrice = BigDecimal.valueOf(totalPriceSum)
+          .divide(BigDecimal.valueOf(totalCount), 2, RoundingMode.HALF_UP);
+    }
+
+    this.lastCheckedAt = LocalDateTime.now();
   }
 }
