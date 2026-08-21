@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.sy.pickandsave.domain.products.dto.ProductCreateRequest;
 import org.sy.pickandsave.domain.products.dto.ProductResponse;
 import org.sy.pickandsave.domain.products.service.ProductService;
+import org.sy.pickandsave.global.common.ApiResponse;
 
 import java.util.List;
 
@@ -23,16 +24,16 @@ public class ProductController {
 
   @Operation(summary = "상품 등록", description = "신규 쿠팡 상품 정보를 DB에 등록합니다.")
   @PostMapping
-  public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductCreateRequest request) {
+  public ResponseEntity<ApiResponse<ProductResponse>> createProduct(@Valid @RequestBody ProductCreateRequest request) {
     ProductResponse response = productService.createProduct(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
   }
 
   @Operation(summary = "상품 단건 조회", description = "상품 ID(PK)를 이용해 해당 상품의 상세 정보를 조회합니다.")
   @GetMapping("/{id}")
-  public ResponseEntity<ProductResponse> getProduct(@PathVariable("id") Long id) {
+  public ResponseEntity<ApiResponse<ProductResponse>> getProduct(@PathVariable("id") Long id) {
     ProductResponse response = productService.getProductById(id);
-    return ResponseEntity.ok(response);
+    return ResponseEntity.ok(ApiResponse.success(response));
   }
 
   @Operation(summary = "상품 전체 목록 조회", description = "등록된 전체 상품 리스트를 조회합니다.")
