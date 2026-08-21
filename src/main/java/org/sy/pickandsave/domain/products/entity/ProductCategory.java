@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 public class ProductCategory {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE , generator = "product_categories_seq_gen")
+	@SequenceGenerator(name = "product_categories_seq_gen", sequenceName = "PRODUCT_CATEGORIES_SEQ", allocationSize = 1)
 	private Long id;
 
 	@Column(name = "name", length = 100, nullable = false)
