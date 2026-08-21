@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.sy.pickandsave.domain.products.dto.ProductCreateCommand;
 import org.sy.pickandsave.domain.products.dto.ProductResponse;
+import org.sy.pickandsave.domain.products.service.ProductCategoryClassifier;
 import org.sy.pickandsave.domain.products.service.ProductService;
 import org.sy.pickandsave.global.external.coupang.dto.CoupangSearchResponse;
 
@@ -18,6 +19,7 @@ public class CoupangApiService {
 
   private final CoupangApiClient coupangApiClient;
   private final ProductService productService;
+  private final ProductCategoryClassifier productCategoryClassifier;
 
   /**
    * 쿠팡에서 키워드로 상품을 검색한 뒤, 검색된 상품들을 DB에 자동 등록합니다.
@@ -41,12 +43,14 @@ public class CoupangApiService {
 
     // 3. 쿠팡 DTO -> 내부 Command 변환 후 저장
     for (CoupangSearchResponse.CoupangItem item : response.getData().getProductData()) {
+      Long inferredCategoryId = productCategoryClassifier.classify(item.getProductName()).orElse(null);
       ProductCreateCommand command = ProductCreateCommand.builder()
           .coupangProductId(item.getProductId())
           .productName(item.getProductName())
           .coupangProductUrl(item.getProductUrl())
           .partnersAffiliateUrl(item.getProductUrl()) // 기본 수집 시 동일 처리
           .imageUrl(item.getProductImage())
+          .categoryId(inferredCategoryId)
           .currentPrice(item.getProductPrice())
           .rocket(item.isRocket())
           .build();

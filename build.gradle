@@ -59,6 +59,9 @@ dependencies {
 	// Hex 라이브러리 추가
 	implementation 'commons-codec:commons-codec:1.17.1'
 
+	// cache 라이브러리 추가
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 //	testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-test'

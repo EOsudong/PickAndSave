@@ -199,4 +199,9 @@ public class Product {
 
     this.lastCheckedAt = LocalDateTime.now();
   }
+
+  // 카테고리 변경 메서드 추가
+  public void updateCategory(ProductCategory category) {
+    this.category = category;
+  }
 }

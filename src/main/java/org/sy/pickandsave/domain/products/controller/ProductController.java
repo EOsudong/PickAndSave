@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.sy.pickandsave.domain.products.dto.ProductCategoryUpdateRequest;
 import org.sy.pickandsave.domain.products.dto.ProductCreateRequest;
 import org.sy.pickandsave.domain.products.dto.ProductResponse;
 import org.sy.pickandsave.domain.products.service.ProductService;
@@ -53,5 +54,28 @@ public class ProductController {
 
     List<ProductResponse> responses = coupangApiService.searchAndSaveProducts(keyword, limit);
     return ResponseEntity.ok(ApiResponse.success(responses));
+  }
+
+
+  /*
+  * 관리자 인증 체크가 없습니다 나중에 관리자 계정/인증 시스템을 붙일 때
+  * 이 두 엔드포인트(/category, /uncategorized)는
+  * 반드시 관리자 권한 체크 대상으로 넣어줘야 합니다.
+  * */
+  @Operation(summary = "상품 카테고리 수동 지정", description = "관리자가 상품의 카테고리를 직접 지정하거나 수정합니다.")
+  @PatchMapping("/{id}/category")
+  public ResponseEntity<ApiResponse<ProductResponse>> updateProductCategory(
+      @PathVariable("id") Long id,
+      @Valid @RequestBody ProductCategoryUpdateRequest request) {
+
+    ProductResponse response = productService.updateCategory(id, request.getCategoryId());
+    return ResponseEntity.ok(ApiResponse.success(response));
+  }
+
+  @Operation(summary = "미분류 상품 목록 조회", description = "카테고리가 지정되지 않은 상품 목록을 조회합니다.")
+  @GetMapping("/uncategorized")
+  public ResponseEntity<ApiResponse<List<ProductResponse>>> getUncategorizedProducts() {
+    List<ProductResponse> response = productService.getUncategorizedProducts();
+    return ResponseEntity.ok(ApiResponse.success(response));
   }
 }

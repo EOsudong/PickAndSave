@@ -94,4 +94,23 @@ public class ProductService {
         .map(ProductResponse::from)
         .toList();
   }
+
+  @Transactional
+  public ProductResponse updateCategory(Long productId, Long categoryId) {
+    Product product = productRepository.findById(productId)
+        .orElseThrow(() -> new IllegalArgumentException("해당 상품을 찾을 수 없습니다. ID: " + productId));
+
+    ProductCategory category = categoryRepository.findById(categoryId)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 ID입니다."));
+
+    product.updateCategory(category);   // 더티 체킹으로 자동 UPDATE
+    return ProductResponse.from(product);
+  }
+
+  public List<ProductResponse> getUncategorizedProducts() {
+    return productRepository.findByCategoryIsNull().stream()
+        .map(ProductResponse::from)
+        .toList();
+  }
+
 }
