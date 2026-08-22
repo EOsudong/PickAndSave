@@ -12,6 +12,7 @@ import java.util.List;
 public interface PriceHistoryRepository extends JpaRepository<PriceHistory, Long> {
 
   List<PriceHistory> findByProductIdOrderByCreatedAtDesc(Long productId);
+  List<PriceHistory> findByProductIdOrderByCreatedAtAsc(Long productId);
 
   // 평균가 통계 산출을 위한 누적 합계 및 건수 조회
   @Query("SELECT SUM(ph.price) FROM PriceHistory ph WHERE ph.product.id = :productId")

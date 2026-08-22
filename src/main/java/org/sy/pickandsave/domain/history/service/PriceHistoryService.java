@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.sy.pickandsave.domain.history.dto.PriceHistoryResponse;
 import org.sy.pickandsave.domain.history.entity.PriceHistory;
 import org.sy.pickandsave.domain.history.repository.PriceHistoryRepository;
 import org.sy.pickandsave.domain.products.entity.Product;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -35,5 +38,11 @@ public class PriceHistoryService {
     if (totalPriceSum != null && totalCount != null && totalCount > 0) {
       product.updatePrice(newPrice, totalPriceSum, totalCount);
     }
+  }
+
+  public List<PriceHistoryResponse> getPriceHistory(Long productId) {
+    return priceHistoryRepository.findByProductIdOrderByCreatedAtAsc(productId).stream()
+        .map(PriceHistoryResponse::from)
+        .toList();
   }
 }

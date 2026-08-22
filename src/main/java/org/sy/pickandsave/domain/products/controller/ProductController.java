@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.sy.pickandsave.domain.history.dto.PriceHistoryResponse;
+import org.sy.pickandsave.domain.history.service.PriceHistoryService;
 import org.sy.pickandsave.domain.products.dto.ProductCategoryUpdateRequest;
 import org.sy.pickandsave.domain.products.dto.ProductCreateRequest;
 import org.sy.pickandsave.domain.products.dto.ProductResponse;
@@ -24,6 +26,7 @@ public class ProductController {
 
   private final ProductService productService;
   private final CoupangApiService coupangApiService;
+  private final PriceHistoryService priceHistoryService;
 
   @Operation(summary = "상품 등록", description = "신규 쿠팡 상품 정보를 DB에 등록합니다.")
   @PostMapping
@@ -54,6 +57,13 @@ public class ProductController {
 
     List<ProductResponse> responses = coupangApiService.searchAndSaveProducts(keyword, limit);
     return ResponseEntity.ok(ApiResponse.success(responses));
+  }
+
+  @Operation(summary = "상품 가격 이력 조회", description = "상품의 가격 변동 이력을 시간순으로 조회합니다.")
+  @GetMapping("/{id}/price-history")
+  public ResponseEntity<ApiResponse<List<PriceHistoryResponse>>> getPriceHistory(@PathVariable("id") Long id) {
+    List<PriceHistoryResponse> response = priceHistoryService.getPriceHistory(id);
+    return ResponseEntity.ok(ApiResponse.success(response));
   }
 
 
