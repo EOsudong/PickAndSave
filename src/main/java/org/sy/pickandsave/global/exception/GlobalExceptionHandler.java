@@ -64,4 +64,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(ApiResponse.error(e.getMessage()));
   }
-}
+
+  // 기존 클래스에 관심 상품 중복 등록 시 발생
+  @ExceptionHandler(DuplicateUserProductException.class)
+  public ResponseEntity<ApiResponse<Void>> handleDuplicateUserProductException(DuplicateUserProductException e) {
+    log.info("Duplicate User Product Registration: {}", e.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT) // 409 Conflict 반환
+        .body(ApiResponse.error(e.getMessage()));
+  }
+}//class

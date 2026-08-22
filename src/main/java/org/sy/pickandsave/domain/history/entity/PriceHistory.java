@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "PRICE_HISTORIES", indexes = {
-    @Index(name = "idx_price_history_product_date", columnList = "product_id, created_at")
+    // 조회 및 차트 출력용 정렬 기준에 맞춰 recorded_at 복합 인덱스로 교체
+    @Index(name = "idx_price_history_product_date", columnList = "product_id, recorded_at")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

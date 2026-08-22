@@ -14,4 +14,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   boolean existsByCoupangProductId(Long coupangProductId);
 
   List<Product> findByCategoryIsNull();
+
+  List<Product> findByCategory_Id(Long categoryId);
+
+  List<Product> findByProductNameContainingIgnoreCase(String keyword);
 }

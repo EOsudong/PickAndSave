@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserProductService {
+
 	private final UserProductRepository userProductRepository;
 	private final ProductRepository productRepository;
 	private final UserRepository userRepository;

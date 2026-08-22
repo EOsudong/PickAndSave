@@ -7,12 +7,13 @@ import org.springframework.stereotype.Repository;
 import org.sy.pickandsave.domain.history.entity.PriceHistory;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PriceHistoryRepository extends JpaRepository<PriceHistory, Long> {
 
-  // 최신순 이력 조회
-  List<PriceHistory> findByProductIdOrderByRecordedAtDesc(Long productId);
+  // 상품의 가장 최근 가격 이력을 한 건 조회 (중복 기록 검증용)
+  Optional<PriceHistory> findFirstByProductIdOrderByRecordedAtDesc(Long productId);
 
   // 시간순(오름차순) 차트 표시용 이력 조회
   List<PriceHistory> findByProductIdOrderByRecordedAtAsc(Long productId);

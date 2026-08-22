@@ -2,55 +2,53 @@ package org.sy.pickandsave.domain.userproduct.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.sy.pickandsave.domain.products.entity.Product;
 import org.sy.pickandsave.domain.userproduct.entity.UserProduct;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
 public class UserProductResponse {
+  private Long id;
 
-	private Long id;
+  private Long productId;
 
-	private Long productId;
+  private Long coupangProductId;
 
-	private String productName;
+  private String productName;
 
-	private String imageUrl;
+  private String imageUrl;
 
-	private Long currentPrice;
+  private BigDecimal currentPrice;
 
-	private Long lowestPrice;
+  private BigDecimal lowestPrice;
 
-	private Long highestPrice;
+  private BigDecimal highestPrice;
 
-	private String partnersAffiliateUrl;
+  private BigDecimal averagePrice;
 
-	private boolean rocket;
+  private String productUrl;
 
-	private LocalDateTime createdAt;
+  private LocalDateTime savedAt;
 
+  public static UserProductResponse from(UserProduct userProduct) {
 
-	public static UserProductResponse from(
-			UserProduct userProduct
-	) {
+    Product product = userProduct.getProduct();
 
-		var product = userProduct.getProduct();
-
-		return UserProductResponse.builder()
-				.id(userProduct.getId())
-				.productId(product.getId())
-				.productName(product.getProductName())
-				.imageUrl(product.getImageUrl())
-				.currentPrice(product.getCurrentPrice())
-				.lowestPrice(product.getLowestPrice())
-				.highestPrice(product.getHighestPrice())
-				.partnersAffiliateUrl(
-						product.getPartnersAffiliateUrl()
-				)
-				.rocket(product.isRocket())
-				.createdAt(userProduct.getCreatedAt())
-				.build();
-	}
-	
+    return UserProductResponse.builder()
+        .id(userProduct.getId())
+        .productId(product.getId())
+        .coupangProductId(product.getCoupangProductId())
+        .productName(product.getProductName())
+        .imageUrl(product.getImageUrl())
+        .currentPrice(BigDecimal.valueOf(product.getCurrentPrice()))
+        .lowestPrice(BigDecimal.valueOf(product.getLowestPrice()))
+        .highestPrice(BigDecimal.valueOf(product.getHighestPrice()))
+        .averagePrice(product.getAveragePrice())
+        .productUrl(product.getCoupangProductUrl())
+        .savedAt(userProduct.getCreatedAt())
+        .build();
+  }
 }

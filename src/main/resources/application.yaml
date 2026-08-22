@@ -68,11 +68,17 @@ spring:
       max-file-size: 10MB       # 파일 하나당 최대 용량
       max-request-size: 10MB    # 한 요청당 전체 최대 용량
 
+scheduler:
+  product-price-update:
+    enabled: false
+
 coupang:
   partners:
     access-key: ${COUPANG_ACCESS_KEY}
     secret-key: ${COUPANG_SECRET_KEY}
     domain: https://api-gateway.coupang.com
+    max-calls-per-hour: 9       # 안전성을 위해 시간당 최대 30회로 엄격 제한
+    cooldown-minutes: 60         # 한도 초과 감지 시 60분간 강제 호출 제한
 
 jwt:
   secret: ${JWT_SECRET_KEY}

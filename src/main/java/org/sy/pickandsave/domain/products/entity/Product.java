@@ -157,14 +157,12 @@ public class Product {
   @PrePersist
   protected void prePersist() {
     LocalDateTime now = LocalDateTime.now();
-
-    if (createdAt == null) {
-      createdAt = now;
-    }
-
-    if (updatedAt == null) {
-      updatedAt = now;
-    }
+    this.createdAt = now;
+    this.updatedAt = now;
+    this.lastCheckedAt = now;
+    if (this.lowestPrice == null) this.lowestPrice = this.currentPrice;
+    if (this.highestPrice == null) this.highestPrice = this.currentPrice;
+    if (this.averagePrice == null) this.averagePrice = BigDecimal.valueOf(this.currentPrice);
   }
 
   @PreUpdate
@@ -173,32 +171,39 @@ public class Product {
   }
 
   /**
-   * 가격 변동 시 최저가/최고가/평균가 통계 재계산 업데이트 메서드 (추가)
+   * 새로운 가격 변동이 감지되었을 때, 최저가/최고가 및 누적 통계를 바탕으로 평균가를 재계산하고 마지막 확인 시간을 갱신합니다.
    */
   public void updatePrice(Long newPrice, long totalPriceSum, long totalCount) {
     this.currentPrice = newPrice;
 
-    // 역대 최저가 갱신
-    if (newPrice < this.lowestPrice) {
+    if (this.lowestPrice == null || newPrice < this.lowestPrice) {
       this.lowestPrice = newPrice;
     }
-
-    // 역대 최고가 갱신
-    if (newPrice > this.highestPrice) {
+    if (this.highestPrice == null || newPrice > this.highestPrice) {
       this.highestPrice = newPrice;
     }
 
-    // 평균가 재계산 (소수점 둘째 자리 반올림)
     if (totalCount > 0) {
       this.averagePrice = BigDecimal.valueOf(totalPriceSum)
           .divide(BigDecimal.valueOf(totalCount), 2, RoundingMode.HALF_UP);
     }
-
     this.lastCheckedAt = LocalDateTime.now();
   }
 
   // 카테고리 변경 메서드 추가
   public void updateCategory(ProductCategory category) {
     this.category = category;
+  }
+
+  // 가격 변동 메서드 추가
+  public boolean isPriceChanged(Long newPrice) {
+    if (this.currentPrice == null) {
+      return newPrice != null;
+    }
+    return !this.currentPrice.equals(newPrice);
+  }
+
+  public void updateLastCheckedAt() {
+    this.lastCheckedAt = LocalDateTime.now();
   }
 }

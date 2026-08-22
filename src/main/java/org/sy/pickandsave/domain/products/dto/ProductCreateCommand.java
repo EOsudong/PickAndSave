@@ -12,5 +12,4 @@ public record ProductCreateCommand(
     Long categoryId,
     Long currentPrice,
     boolean rocket
-) {
-}
+) { }
