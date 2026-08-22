@@ -9,13 +9,19 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class PriceHistoryResponse {
+  private Long id;
   private Long price;
+  private String source;
   private LocalDateTime recordedAt;
+  private LocalDateTime createdAt;
 
   public static PriceHistoryResponse from(PriceHistory history) {
     return PriceHistoryResponse.builder()
+        .id(history.getId())
         .price(history.getPrice())
-        .recordedAt(history.getCreatedAt())
+        .source(history.getSource())
+        .recordedAt(history.getRecordedAt())
+        .createdAt(history.getCreatedAt())
         .build();
   }
 }

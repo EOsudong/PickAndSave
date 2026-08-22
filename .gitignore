@@ -38,3 +38,5 @@ out/
 
 .env
 /src/main/resources/Wallet/
+/make-project-md.ps1
+/project.md

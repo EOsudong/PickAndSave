@@ -9,6 +9,7 @@ import org.sy.pickandsave.domain.history.entity.PriceHistory;
 import org.sy.pickandsave.domain.history.repository.PriceHistoryRepository;
 import org.sy.pickandsave.domain.products.entity.Product;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -24,14 +25,22 @@ public class PriceHistoryService {
    */
   @Transactional
   public void recordPriceAndCalculateStats(Product product, Long newPrice) {
-    // 1. 가격 이력 저장 (조회 시점마다 이력 수집)
+    recordPriceAndCalculateStats(product, newPrice, "COUPANG");
+  }
+
+  @Transactional
+  public void recordPriceAndCalculateStats(Product product, Long newPrice, String source) {
+    // 1. 가격 이력 저장
     PriceHistory history = PriceHistory.builder()
         .product(product)
         .price(newPrice)
+        .source(source)
+        .recordedAt(LocalDateTime.now())
         .build();
+
     priceHistoryRepository.save(history);
 
-    // 2. 전체 이력 기반 가격 통계 재계산
+    // 2. 전체 이력 기반 가격 통계 재계산 및 Product Entity 갱신
     Long totalPriceSum = priceHistoryRepository.sumPriceByProductId(product.getId());
     Long totalCount = priceHistoryRepository.countByProductId(product.getId());
 
@@ -40,8 +49,11 @@ public class PriceHistoryService {
     }
   }
 
+  /**
+   * 특정 상품의 가격 히스토리(시간순 오름차순) 조회
+   */
   public List<PriceHistoryResponse> getPriceHistory(Long productId) {
-    return priceHistoryRepository.findByProductIdOrderByCreatedAtAsc(productId).stream()
+    return priceHistoryRepository.findByProductIdOrderByRecordedAtAsc(productId).stream()
         .map(PriceHistoryResponse::from)
         .toList();
   }

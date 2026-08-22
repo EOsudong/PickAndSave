@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 public class PriceHistory {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "price_history_seq_generator")
-  @SequenceGenerator(name = "price_history_seq_generator", sequenceName = "PRICE_HISTORIES_SEQ", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "price_history_seq_gen")
+  @SequenceGenerator(name = "price_history_seq_gen", sequenceName = "PRICE_HISTORIES_SEQ", allocationSize = 1)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -29,19 +29,38 @@ public class PriceHistory {
   @Column(name = "price", nullable = false)
   private Long price;
 
+  @Column(name = "source", length = 20, nullable = false)
+  private String source;
+
+  @Column(name = "recorded_at", nullable = false)
+  private LocalDateTime recordedAt;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
   @Builder
-  public PriceHistory(Product product, Long price) {
+  public PriceHistory(
+      Product product,
+      Long price,
+      String source,
+      LocalDateTime recordedAt
+  ) {
     this.product = product;
     this.price = price;
+    this.source = source != null ? source : "COUPANG";
+    this.recordedAt = recordedAt;
   }
 
   @PrePersist
   protected void prePersist() {
-    if (this.createdAt == null) {
-      this.createdAt = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now();
+
+    if (recordedAt == null) {
+      recordedAt = now;
+    }
+
+    if (createdAt == null) {
+      createdAt = now;
     }
   }
 }
