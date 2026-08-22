@@ -7,6 +7,7 @@ import org.sy.pickandsave.domain.products.dto.ProductCreateCommand;
 import org.sy.pickandsave.domain.products.dto.ProductResponse;
 import org.sy.pickandsave.domain.products.service.ProductCategoryClassifier;
 import org.sy.pickandsave.domain.products.service.ProductService;
+import org.sy.pickandsave.global.exception.DuplicateProductException;
 import org.sy.pickandsave.global.external.coupang.dto.CoupangSearchResponse;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class CoupangApiService {
       try {
         ProductResponse savedProduct = productService.createProductByCommand(command);
         savedProducts.add(savedProduct);
-      } catch (IllegalArgumentException e) {
+      } catch (DuplicateProductException e) {
         log.info("중복 상품 스킵 (Coupang ID: {}): {}", item.getProductId(), e.getMessage());
       }
     }

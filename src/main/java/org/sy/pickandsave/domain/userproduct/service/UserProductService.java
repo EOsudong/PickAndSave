@@ -18,9 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserProductService {
-	UserProductRepository userProductRepository;
-	ProductRepository productRepository;
-	UserRepository userRepository;
+	private final UserProductRepository userProductRepository;
+	private final ProductRepository productRepository;
+	private final UserRepository userRepository;
 
 	/**
 	 * 관심상품 등록

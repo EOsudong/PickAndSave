@@ -57,4 +57,11 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
         .body(ApiResponse.error(e.getMessage()));
   }
+
+  @ExceptionHandler(DuplicateProductException.class)
+  public ResponseEntity<ApiResponse<Void>> handleDuplicateProductException(DuplicateProductException e) {
+    log.info("Duplicate Product: {}", e.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(ApiResponse.error(e.getMessage()));
+  }
 }

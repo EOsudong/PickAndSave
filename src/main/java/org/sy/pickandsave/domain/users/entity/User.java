@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class User {
 
   @Id
@@ -71,7 +69,6 @@ public class User {
   @Column(name = "last_login_at", nullable = false)
   private LocalDateTime lastLoginAt;
 
-  @Builder
   public User(String email, String nickname, AuthProvider provider, String providerId, UserPlan plan) {
     this.email = email;
     this.nickname = nickname;
@@ -98,6 +95,20 @@ public class User {
     if (this.status == null) {
       this.status = UserStatus.ACTIVE;
     }
+    if (this.plan == null) {
+      this.plan = UserPlan.FREE;
+    }
+  }
+
+  @Builder
+  public User(String email, String nickname, AuthProvider provider,
+              String providerId, UserRole role, UserPlan plan) {
+    this.email = email;
+    this.nickname = nickname;
+    this.provider = provider;
+    this.providerId = providerId;
+    this.role = role != null ? role : UserRole.ROLE_USER;
+    this.plan = plan != null ? plan : UserPlan.FREE;
   }
 
   @PreUpdate
